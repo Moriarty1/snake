@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>    
+    <string name="pref_title_start_level">Start from level</string>
+    <string name="pref_title_length">Initial length of the snake</string>
+    <string name="pref_title_speed">Speed</string>
+    <string name="pref_summary_speed">Choose the initial speed of the snake</string>
+    <string name="pref_title_number_of_apples">Number of apples</string>
+    <string name="pref_summary_number_of_apples">The number of apples on the screen</string>    
+    <string name="pref_title_bonus">Bonus</string>
+    <string name="pref_summary_bonus">After eating how many apples will be a bonus</string>    
+    <string name="pref_title_bonus_time">Bonus time</string>
+    <string name="pref_summary_bonus_time">Time to disappearance bonus</string>
+    <string name="pref_title_levelup">Levelup bonus</string>
+    <string name="pref_summary_levelup">After eating how many apples will be a levelup bonus</string>
+    <string name="pref_always_present">Always present</string>
+    <string name="pref_never">Never</string>
+    <string name="pref_title_double">Size 2X</string>
+    <string name="pref_summary_double">Double size of the field </string>
+    <string name="pref_category_snake">Snake</string>
+    <string name="pref_category_apple">Apples</string>
+    <string name="pref_category_other">Other</string>
+    <string name="pref_title_orientation">Screen orientation</string>
+    
+           
+</resources>

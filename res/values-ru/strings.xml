@@ -1,0 +1,41 @@
+<resources>
+
+    <string name="game_over">Конец игры</string>
+    <string name="level_">Уровень: </string>
+    <string name="levelup">Новый уровень</string>
+    <string name="new_game">Новая игра</string>
+    <string name="next_level_">Следующий уровень:</string>
+    <string name="pause">Пауза</string>
+    <string name="pref_always_present">Всегда присутсвует</string>
+    <string name="pref_never">Никогда</string>
+    <string name="pref_category_snake">Змейка</string>
+    <string name="pref_category_apple">Яблоки</string>
+    <string name="pref_category_other">Другое</string>
+    <string name="pref_summary_bonus">После съедания скольких яблок появится бонус</string>
+    <string name="pref_summary_bonus_time">Время до исчезновения бонуса</string>
+    <string name="pref_summary_double">Двойной размер поля </string>
+    <string name="pref_summary_levelup">После съедания скольких яблок появится бонус перехода</string>
+    <string name="pref_summary_number_of_apples">Количество яблок на экране</string>
+    <string name="pref_summary_speed">Выберите начальную скорость змейки</string>
+    <string name="pref_title_bonus">Бонус</string>
+    <string name="pref_title_bonus_time">Бонусное время</string>
+    <string name="pref_title_double">Размер 2Х</string>
+    <string name="pref_title_length">Начальная длина змейки</string>
+    <string name="pref_title_number_of_apples">Количество яблок</string>
+    <string name="pref_title_orientation">Ориентация экрана</string>
+    <string name="pref_title_speed">Скорость</string>
+    <string name="pref_title_start_level">Начинать с уровня</string>
+    <string name="pref_title_levelup">Бонус перехода на следующий уровень</string>
+    <string name="score_">Очки: </string>
+    <string name="settings">Настройки</string>
+    <string name="snake">Змейка</string>
+    <string name="touch_to_play">Коснитесь для продолжения</string>
+    
+    <string-array name="orientatin_entries">
+		<item >Книжная</item>
+		<item >Альбомная</item>
+		<item >По сенсору</item>
+	</string-array>
+	
+
+</resources>

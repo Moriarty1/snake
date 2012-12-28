@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+table 24x35 
+snake (2,7)-(7,7) 
+-->
+<walls>
+
+    <horizontal>
+        
+        <wall
+            length="5"
+            startX="17"
+            startY="17" />
+    </horizontal>
+
+    <vertical>
+        <wall
+            length="5"
+            startX="13"
+            startY="13" />
+        
+        
+    </vertical>
+
+</walls>

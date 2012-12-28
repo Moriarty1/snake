@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <!--
+    <ListPreference 
+        android:key="level"
+        android:title="@string/pref_title_start_level"        
+        android:defaultValue="1"
+        android:entries="@array/level"
+        android:entryValues="@array/level"
+		android:dialogTitle="@string/pref_title_start_level" />
+    -->
+    <PreferenceCategory android:title="@string/pref_category_snake" >
+        <ListPreference
+            android:defaultValue="6"
+            android:dialogTitle="@string/pref_title_length"
+            android:entries="@array/length"
+            android:entryValues="@array/length"
+            android:key="length"
+            android:title="@string/pref_title_length" />
+        <ListPreference
+            android:defaultValue="6"
+            android:dialogTitle="@string/pref_summary_speed"
+            android:entries="@array/snake_speed"
+            android:entryValues="@array/snake_speed"
+            android:key="speed"
+            android:summary="@string/pref_summary_speed"
+            android:title="@string/pref_title_speed" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/pref_category_apple" >
+        <ListPreference
+            android:defaultValue="1"
+            android:dialogTitle="@string/pref_summary_number_of_apples"
+            android:entries="@array/apples"
+            android:entryValues="@array/apples"
+            android:key="apples"
+            android:summary="@string/pref_summary_number_of_apples"
+            android:title="@string/pref_title_number_of_apples" />
+        <ListPreference
+            android:defaultValue="5"
+            android:dialogTitle="@string/pref_summary_bonus"
+            android:entries="@array/bonus_entries"
+            android:entryValues="@array/bonus_entryValues"
+            android:key="bonus"
+            android:summary="@string/pref_summary_bonus"
+            android:title="@string/pref_title_bonus" />
+        <ListPreference
+            android:defaultValue="20"
+            android:dialogTitle="@string/pref_summary_bonus_time"
+            android:entries="@array/bonus_time"
+            android:entryValues="@array/bonus_time"
+            android:key="bonus_time"
+            android:summary="@string/pref_summary_bonus_time"
+            android:title="@string/pref_title_bonus_time" />
+        <ListPreference
+            android:defaultValue="20"
+            android:dialogTitle="@string/pref_summary_levelup"
+            android:entries="@array/levelup_entries"
+            android:entryValues="@array/levelup_entryValues"
+            android:key="levelup"
+            android:summary="@string/pref_summary_levelup"
+            android:title="@string/pref_title_levelup" />
+    </PreferenceCategory>
+    
+    <PreferenceCategory android:title="@string/pref_category_other" >
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="double"
+            android:summary="@string/pref_summary_double"
+            android:title="@string/pref_title_double" />
+        <ListPreference
+            android:defaultValue="4"
+            android:dialogTitle="@string/pref_title_orientation"
+            android:entries="@array/orientatin_entries"
+            android:entryValues="@array/orientatin_entryValues"
+            android:key="orientation"
+            android:title="@string/pref_title_orientation" />
+    </PreferenceCategory>
+    
+</PreferenceScreen>

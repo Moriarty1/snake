@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="dima.android.snake" android:installLocation="auto">
+
+    <uses-sdk
+        android:maxSdkVersion="17"
+        android:minSdkVersion="8"
+        android:targetSdkVersion="15" />
+
+    <application
+        android:allowBackup="true"
+        android:label="@string/snake" android:icon="@drawable/snake_launcher">
+        <activity
+            android:name="dima.android.snake.Snake"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="dima.android.snake.SettingsActivity"
+            android:label="@string/settings" >
+        </activity>
+    </application>
+
+</manifest>
+
+<!-- android:screenOrientation="portrait" -->
