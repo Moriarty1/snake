@@ -12,10 +12,12 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
+import android.util.SparseIntArray;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
@@ -73,11 +75,14 @@ public class SnakeView extends TileView {
     //sound
     AudioManager mAudioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
     private SoundPool soundPool;
-    private HashMap<Integer, Integer> soundsMap;
+    private SparseIntArray soundsMap;
     private static final int SOUND_STEP=1;
     private static final int SOUND_LEVELUP=2;
     private static final int SOUND_BITE=3;
     private static final int SOUND_CRASH=4;
+    private static final int SOUND_BACKGROUND=5;
+    
+    private MediaPlayer player;
     
     
 
@@ -121,12 +126,22 @@ public class SnakeView extends TileView {
         super(context, attrs);
         //initSnakeView();
         
+        player = MediaPlayer.create(getContext(), R.raw.background);
+        player.setLooping(true);
+        player.start();
+        
+        
+        
+       
         soundPool = new SoundPool(4, AudioManager.STREAM_MUSIC, 100);
-        soundsMap = new HashMap<Integer, Integer>();
+        soundsMap = new SparseIntArray();
         soundsMap.put(SOUND_STEP, soundPool.load(getContext(),R.raw.step , 1));
         soundsMap.put(SOUND_LEVELUP, soundPool.load(getContext(),R.raw.levelup , 1));
         soundsMap.put(SOUND_BITE, soundPool.load(getContext(),R.raw.bite , 1));
         soundsMap.put(SOUND_CRASH, soundPool.load(getContext(),R.raw.damage , 1));
+       
+        
+        
    }
 
 //    public SnakeView(Context context, AttributeSet attrs, int defStyle) {
