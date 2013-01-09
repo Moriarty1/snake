@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-table 24x35 
-snake (2,7)-(7,7) 
+table 18x35 
+snake (0,1)-(6,1)
 -->
 <walls>
 
@@ -12,9 +12,15 @@ snake (2,7)-(7,7)
     <vertical>
         
         <wall
-            length="5"
-            startX="11"
-            startY="11" />
+            length="9"
+            startX="8"
+            startY="8" />
+
+	<wall
+            length="9"
+            startX="9"
+            startY="8" />
+
         
     </vertical>
 

@@ -176,7 +176,8 @@ public class SnakeView extends TileView {
     private void initSnakeView() {
     	setFocusable(true);
     	mFirst=true;
-    	mWTileCount = Snake.prefs.getBoolean("double", false)?2*TILE_COUNT:TILE_COUNT;
+    	mWTileCount = TILE_COUNT;
+    	//mWTileCount = Snake.prefs.getBoolean("double", false)?2*TILE_COUNT:TILE_COUNT;
     	TileSizeChange();
     	Resources r = this.getContext().getResources();
         resetTiles(10);

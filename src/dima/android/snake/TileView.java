@@ -10,7 +10,7 @@ import android.util.AttributeSet;
 import android.view.View;
 
 public class TileView extends View {
-	protected static final int TILE_COUNT = 12;
+	protected static final int TILE_COUNT = 18;
 	protected static int mTileSize;
 	private static int mXTileCount;
 	private static int mYTileCount;

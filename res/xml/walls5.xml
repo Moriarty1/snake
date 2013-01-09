@@ -1,34 +1,96 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-table 24x35 
-snake (2,7)-(7,7) 
+table 18x35 
+snake (0,1)-(6,1)
 -->
 <walls>
 
     <horizontal>
-        <wall
-            length="5"
+	
+	<wall
+            length="4"
             startX="2"
             startY="2" />
-        <wall
-            length="5"
-            startX="17"
-            startY="17" />
+	
 	<wall
-            length="7"
-            startX="3"
-            startY="20" />
+            length="4"
+            startX="12"
+            startY="2" />
+
+	<wall
+            length="4"
+            startX="2"
+            startY="12" />
+
+	<wall
+            length="4"
+            startX="12"
+            startY="12" />
+
+	<wall
+            length="4"
+            startX="2"
+            startY="22" />
+
+	<wall
+            length="4"
+            startX="12"
+            startY="22" />
+     
     </horizontal>
 
     <vertical>
+
+	<wall
+            length="7"
+            startX="2"
+            startY="4" />
+
+	<wall
+            length="7"
+            startX="5"
+            startY="4" />
+
+	<wall
+            length="7"
+            startX="12"
+            startY="4" />
+
+	<wall
+            length="7"
+            startX="15"
+            startY="4" />
+        
         <wall
-            length="5"
-            startX="13"
-            startY="13" />
-        <wall
-            length="5"
-            startX="11"
-            startY="11" />
+            length="9"
+            startX="8"
+            startY="8" />
+
+	<wall
+            length="9"
+            startX="9"
+            startY="8" />
+
+	<wall
+            length="7"
+            startX="2"
+            startY="14" />
+
+	<wall
+            length="7"
+            startX="5"
+            startY="14" />
+
+	<wall
+            length="7"
+            startX="12"
+            startY="14" />
+
+	<wall
+            length="7"
+            startX="15"
+            startY="14" />
+
         
     </vertical>
 
