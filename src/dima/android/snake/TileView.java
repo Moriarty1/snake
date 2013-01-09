@@ -2,8 +2,6 @@
 package dima.android.snake;
 
 import android.content.Context;
-import android.content.res.Configuration;
-//import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;

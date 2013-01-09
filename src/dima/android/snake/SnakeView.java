@@ -2,7 +2,6 @@ package dima.android.snake;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import org.xmlpull.v1.XmlPullParser;
@@ -80,12 +79,8 @@ public class SnakeView extends TileView {
     private static final int SOUND_LEVELUP=2;
     private static final int SOUND_BITE=3;
     private static final int SOUND_CRASH=4;
-    private static final int SOUND_BACKGROUND=5;
-    
     private MediaPlayer player;
     
-    
-
     private List<Coordinate> mSnakeTrail = new ArrayList<Coordinate>();
     private List<Coordinate> mAppleList = new ArrayList<Coordinate>();
     private List<Coordinate> mAppleLvList = new ArrayList<Coordinate>();
@@ -97,7 +92,6 @@ public class SnakeView extends TileView {
     private static final Random RNG = new Random();
 
     // handler
-    // don't know how it works
     private RefreshHandler mRedrawHandler = new RefreshHandler();
 
     protected Coordinate ifNeedRotate270(float x, float y) {
@@ -124,15 +118,7 @@ public class SnakeView extends TileView {
     //constructor
     public SnakeView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        //initSnakeView();
         
-        player = MediaPlayer.create(getContext(), R.raw.background);
-        player.setLooping(true);
-        player.start();
-        
-        
-        
-       
         soundPool = new SoundPool(4, AudioManager.STREAM_MUSIC, 100);
         soundsMap = new SparseIntArray();
         soundsMap.put(SOUND_STEP, soundPool.load(getContext(),R.raw.step , 1));
@@ -140,19 +126,11 @@ public class SnakeView extends TileView {
         soundsMap.put(SOUND_BITE, soundPool.load(getContext(),R.raw.bite , 1));
         soundsMap.put(SOUND_CRASH, soundPool.load(getContext(),R.raw.damage , 1));
        
-        
+        player = MediaPlayer.create(getContext(), R.raw.background);
+        player.setLooping(true);
+        player.start();
         
    }
-
-//    public SnakeView(Context context, AttributeSet attrs, int defStyle) {
-//    	super(context, attrs, defStyle);
-//    	//initSnakeView();
-//    	
-//    	
-//    	soundPool = new SoundPool(4, AudioManager.STREAM_MUSIC, 100);
-//        soundsMap = new HashMap<Integer, Integer>();
-//        soundsMap.put(STEP, soundPool.load(getContext(),R.raw.sound , 1));
-//    }
 
     //load settings
     public void loadSettings(){
