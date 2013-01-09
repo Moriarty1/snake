@@ -10,6 +10,16 @@
         android:entryValues="@array/level"
 		android:dialogTitle="@string/pref_title_start_level" />
     -->
+    <PreferenceCategory android:title="@string/pref_category_sounds_and_music" >
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="sounds"
+            android:title="@string/pref_title_sounds" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="music"
+            android:title="@string/pref_title_music" />
+    </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_category_snake" >
         <ListPreference
             android:defaultValue="6"

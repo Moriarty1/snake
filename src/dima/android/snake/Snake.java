@@ -64,6 +64,9 @@ public class Snake extends Activity {
     	if (mSnakeView.getMode()==SnakeView.RUNNING){
 			mSnakeView.setMode(SnakeView.PAUSE);
     	}
+    	if (mSnakeView.getMusic()){
+    		mSnakeView.mPlayer.pause();
+    	}
     	return true;
     }
     
@@ -71,6 +74,9 @@ public class Snake extends Activity {
     public void onOptionsMenuClosed(Menu menu){
     	if (mSnakeView.getMode()==SnakeView.PAUSE){
 			mSnakeView.setMode(SnakeView.RUNNING);
+    	}
+    	if (mSnakeView.getMusic()){
+    		mSnakeView.mPlayer.start();
     	}
     }
     
@@ -113,13 +119,20 @@ public class Snake extends Activity {
     protected void onPause() {
         super.onPause();
         mSnakeView.setMode(SnakeView.PAUSE);
+        if (mSnakeView.getMusic()){
+    		mSnakeView.mPlayer.pause();
+    	}
+        
     }
 
     @Override 
     public void onResume(){
         super.onResume(); 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        prefs.registerOnSharedPreferenceChangeListener(prefListener); 
+        prefs.registerOnSharedPreferenceChangeListener(prefListener);
+        if (mSnakeView.getMusic()){
+    		mSnakeView.mPlayer.start();
+    	}
     }
     
     //save game

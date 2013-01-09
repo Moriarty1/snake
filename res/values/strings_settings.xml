@@ -20,6 +20,9 @@
     <string name="pref_category_apple">Apples</string>
     <string name="pref_category_other">Other</string>
     <string name="pref_title_orientation">Screen orientation</string>
+    <string name="pref_category_sounds_and_music">Sounds and Music</string>
+    <string name="pref_title_sounds">Sounds</string>
+    <string name="pref_title_music">Music</string>
     
            
 </resources>

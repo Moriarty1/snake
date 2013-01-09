@@ -79,7 +79,13 @@ public class SnakeView extends TileView {
     private static final int SOUND_LEVELUP=2;
     private static final int SOUND_BITE=3;
     private static final int SOUND_CRASH=4;
-    private MediaPlayer player;
+    public MediaPlayer mPlayer;
+    private boolean mSounds;
+    private boolean mMusic=false;
+    
+    public boolean getMusic(){
+    	return mMusic;
+    }
     
     private List<Coordinate> mSnakeTrail = new ArrayList<Coordinate>();
     private List<Coordinate> mAppleList = new ArrayList<Coordinate>();
@@ -125,11 +131,6 @@ public class SnakeView extends TileView {
         soundsMap.put(SOUND_LEVELUP, soundPool.load(getContext(),R.raw.levelup , 1));
         soundsMap.put(SOUND_BITE, soundPool.load(getContext(),R.raw.bite , 1));
         soundsMap.put(SOUND_CRASH, soundPool.load(getContext(),R.raw.damage , 1));
-       
-        player = MediaPlayer.create(getContext(), R.raw.background);
-        player.setLooping(true);
-        player.start();
-        
    }
 
     //load settings
@@ -148,7 +149,17 @@ public class SnakeView extends TileView {
     		mLevelUp = Integer.parseInt(Snake.prefs.getString("levelup","20"));
     		mLevelUpLeft = mLevelUp;
     	}
-    	
+    	mSounds = Snake.prefs.getBoolean("sounds", true);
+    	if (mMusic != Snake.prefs.getBoolean("music", true)){
+    		mMusic = Snake.prefs.getBoolean("music", true);
+    		if (mMusic) {
+    			mPlayer = MediaPlayer.create (getContext(), R.raw.background);
+    	        mPlayer.setLooping(true);
+    			mPlayer.start();
+    		}else{
+    			mPlayer.release();
+			}
+    	}
     }
     
     public void checkSettings(){
@@ -160,10 +171,6 @@ public class SnakeView extends TileView {
     			addRandomApple(APLLE_IMAGE);
     		}
     	}
-    	
-		//mTempAppleList.add(mAppleList.get(i));
-			
-		
     }
     
     private void initSnakeView() {
@@ -303,7 +310,7 @@ public class SnakeView extends TileView {
         for (int i = 0; i < mApplesNumber; i++) {				
         	addRandomApple(APLLE_IMAGE);        
         }
-        if (mLevelUp==0) {
+        if ((mLevelUp==0) & (mLevel!=mLastLevel)) {
     		addRandomApple(APLLE_LV_IMAGE);
     		mLevelUpLeft--;		
     	} 
@@ -577,7 +584,6 @@ public class SnakeView extends TileView {
                 updateApplesLv();
                 updateApplesBonus();                
                 mLastMove = now;
-                
             }
             mRedrawHandler.sleep(mMoveDelay);
         }
@@ -621,45 +627,48 @@ public class SnakeView extends TileView {
 	private void updateSnake() {
 		if (mMode == RUNNING) {
 			boolean growSnake = false;
-			float volume = (float)mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC) 
-					/ mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-
+			
 			// move head
 			Coordinate head = mSnakeTrail.get(0);
 			Coordinate newHead = new Coordinate(1, 1);
 			mDirection = mNextDirection;
 
 			newHead = new Coordinate(
-					head.getX() + ((mDirection == EAST) ?
-							1 : (mDirection == WEST) ? 
-									-1 : 0),
-					head.getY() + ((mDirection == SOUTH)? 
-							1 : (mDirection == NORTH)? 
-									-1 : 0));
+					head.getX() + ( (mDirection == EAST) ?	1 : 
+									(mDirection == WEST) ? -1 : 0),
+					head.getY() + (	(mDirection == SOUTH)?	1 : 
+									(mDirection == NORTH)? -1 : 0));
 
 			// collisions with Wall or Snake, except last trail 
 			if (collision(newHead, mWallList) | ((collision(newHead, mSnakeTrail)) 
 							& collisionCoordinate != mSnakeTrail.get(mSnakeTrail.size() - 1))){
 				setMode(LOSE);
-				// play bite			
-				soundPool.play(soundsMap.get(SOUND_CRASH), volume, volume, 1, 0, 1);
-				
+				// play crash
+				if (mSounds){
+					soundPool.play(soundsMap.get(SOUND_CRASH), 1, 1, 1, 0, 1);
+				}
 				return;
 			}
 
 			// find appleLv
 			if (collision(newHead, mAppleLvList)) {
+				
+				// play levelup
+				if (mSounds){
+    				soundPool.play(soundsMap.get(SOUND_LEVELUP), 1, 1, 1, 0, 1);
+				}
 				mAppleLvList.remove(collisionCoordinate);
 				setMode(LEVELUP);
-				
-				
-				// play bite			
-				soundPool.play(soundsMap.get(SOUND_LEVELUP), volume, volume, 1, 0, 1);
 				return;
 			}
 
 			// find apple
 			if (collision(newHead, mAppleList)) {
+				
+				// play bite
+				if (mSounds){
+    				soundPool.play(soundsMap.get(SOUND_BITE), 1, 1, 1, 0, 1);
+				}
 				mAppleList.remove(collisionCoordinate);
 				addRandomApple(APLLE_IMAGE);
 				mScore += mLevel;
@@ -681,18 +690,15 @@ public class SnakeView extends TileView {
 					mLevelUpLeft--;
 				}
 				growSnake = true;
+			} else if (collision(newHead, mAppleBonusList)) {
 				
-				// play bite			
-				soundPool.play(soundsMap.get(SOUND_BITE), volume, volume, 1, 0, 1);
-			}
-
-			if (collision(newHead, mAppleBonusList)) {
+				// play bite
+				if (mSounds){
+    				soundPool.play(soundsMap.get(SOUND_BITE), 1, 1, 1, 0, 1);
+				}
 				mAppleBonusList.remove(collisionCoordinate);
 				mScore += (mLevel * mBonusTimeLeft);
 				growSnake = true;
-				
-				// play bite			
-				soundPool.play(soundsMap.get(SOUND_BITE), volume, volume, 1, 0, 1);
 			}
 
 			// +head -trail
@@ -701,8 +707,10 @@ public class SnakeView extends TileView {
 			}
 			mSnakeTrail.add(0, newHead);
 			
-			// play step			
-			soundPool.play(soundsMap.get(SOUND_STEP), volume, volume, 1, 0, 1);
+			// play step
+			if (mSounds){
+				soundPool.play(soundsMap.get(SOUND_STEP), 1, 1, 1, 0, 1);
+			}
 			
 			//draw head or body
 			for (Coordinate c : mSnakeTrail) {

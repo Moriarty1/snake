@@ -8,9 +8,10 @@
     <string name="pause">Пауза</string>
     <string name="pref_always_present">Всегда присутсвует</string>
     <string name="pref_never">Никогда</string>
-    <string name="pref_category_snake">Змейка</string>
     <string name="pref_category_apple">Яблоки</string>
     <string name="pref_category_other">Другое</string>
+    <string name="pref_category_snake">Змейка</string>
+    <string name="pref_category_sounds_and_music">Звуки и музыка</string>
     <string name="pref_summary_bonus">После съедания скольких яблок появится бонус</string>
     <string name="pref_summary_bonus_time">Время до исчезновения бонуса</string>
     <string name="pref_summary_double">Двойной размер поля </string>
@@ -21,8 +22,10 @@
     <string name="pref_title_bonus_time">Бонусное время</string>
     <string name="pref_title_double">Размер 2Х</string>
     <string name="pref_title_length">Начальная длина змейки</string>
+    <string name="pref_title_music">Музыка</string>
     <string name="pref_title_number_of_apples">Количество яблок</string>
     <string name="pref_title_orientation">Ориентация экрана</string>
+    <string name="pref_title_sounds">Звуки</string>
     <string name="pref_title_speed">Скорость</string>
     <string name="pref_title_start_level">Начинать с уровня</string>
     <string name="pref_title_levelup">Бонус перехода на следующий уровень</string>
@@ -36,6 +39,5 @@
 		<item >Альбомная</item>
 		<item >По сенсору</item>
 	</string-array>
-	
 
 </resources>
