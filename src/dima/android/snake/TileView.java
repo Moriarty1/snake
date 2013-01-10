@@ -23,6 +23,7 @@ public class TileView extends View {
     private final Paint mPaint = new Paint();
     public static boolean mFirst=true;
     
+    
     //constructor  
     public TileView(Context context, AttributeSet attrs) {
         super(context, attrs);

@@ -6,10 +6,12 @@ import java.util.List;
 import java.util.Random;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
@@ -21,65 +23,57 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
-
+import static dima.android.snake.Const.*;
 
 public class SnakeView extends TileView {
     //private static final String TAG = "SnakeView";
     
-    //mode of application
+	private int mMode = READY;
+        
+    private int mDirection = NORTH,
+    			mNextDirection = NORTH;
     
-    private int mMode = READY;
-    public static final int PAUSE = 0;
-    public static final int READY = 1;
-    public static final int RUNNING = 2;
-    public static final int LOSE = 3;
-    public static final int LEVELUP = 4;
 
-    //current direction     
-    private int mDirection = NORTH;
-    private int mNextDirection = NORTH;
-    private static final int NORTH = 1;
-    private static final int SOUTH = 2;
-    private static final int EAST = 3;
-    private static final int WEST = 4;
     
-    // tiles      
-    private static final int WALL_IMAGE_1 = 1; // do not change number
-    private static final int WALL_IMAGE_2 = 2; // do not change number
-    private static final int WALL_IMAGE_3 = 3; // do not change number   
-    private static final int HEAD_IMAGE = 4;
-    private static final int SNAKE_IMAGE = 5;
-    private static final int APLLE_IMAGE = 6;
-    private static final int APLLE_LV_IMAGE = 7;
-    private static final int APLLE_BONUS_IMAGE = 8;
-    private static final int BACKGROUND_IMAGE = 9; // last mast be background 
-
-    private long mLevel;
-    private long mLastLevel = 5;
-    private long mScore = 0;
-    private long mMoveDelay;
-    private long mLongPressDelay = 1000;  
-    private long mLastMove;
-    private long mLastTouch;
-    private long mBonus;
-    private long mBonusLeft=0;
-    private long mBonusTime;
-    private long mBonusTimeLeft=0;
-    private long mApplesNumber;
-    private long mLevelUp;
-    private long mLevelUpLeft=0;
-    private long mSnakeStartLength;
+    private long 
+    	mLevel,
+    	mLastLevel = 5, //TODO change
+    	mScore,
+    	mMoveDelay,
+    	mLongPressDelay = 1000, //TODO Need?   
+    	mLastMove,
+    	mLastTouch,
+    	mBonus,
+    	mBonusLeft,
+    	mBonusTime,
+    	mBonusTimeLeft,
+    	mApplesNumber,
+    	mLevelUp,
+    	mLevelUpLeft, 
+    	mSnakeStartLength;
+    
+//    private long mLevel;
+//    private long mLastLevel = 5;
+//    private long mScore = 0;
+//    private long mMoveDelay;
+//    private long mLongPressDelay = 1000;  
+//    private long mLastMove;
+//    private long mLastTouch;
+//    private long mBonus;
+//    private long mBonusLeft=0;
+//    private long mBonusTime;
+//    private long mBonusTimeLeft=0;
+//    private long mApplesNumber;
+//    private long mLevelUp;
+//    private long mLevelUpLeft=0;
+//    private long mSnakeStartLength;
     private TextView mStatusText;
     
     //sound
-    AudioManager mAudioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
+    //AudioManager mAudioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
     private SoundPool soundPool;
     private SparseIntArray soundsMap;
-    private static final int SOUND_STEP=1;
-    private static final int SOUND_LEVELUP=2;
-    private static final int SOUND_BITE=3;
-    private static final int SOUND_CRASH=4;
-    public MediaPlayer mPlayer;
+    protected MediaPlayer mPlayer;
     private boolean mSounds;
     private boolean mMusic=false;
     
@@ -218,96 +212,112 @@ public class SnakeView extends TileView {
         
         Random rand = new Random();
         WallCoordinate c;
-        for (int x = 0; x < (mWTileCount); x++) {
-        	c = new WallCoordinate(x, 0, rand.nextInt(3)+1);
-			mWallList.add(c);
-            c = new WallCoordinate(x, (mHTileCount) - 1, rand.nextInt(3)+1);
-			mWallList.add(c);
-        } 	
-        for (int y = 1; y < (mHTileCount) - 1; y++) {
-        	c = new WallCoordinate(0, y, rand.nextInt(3)+1);
-			mWallList.add(c);
-            c = new WallCoordinate((mWTileCount) - 1, y, rand.nextInt(3)+1);
-			mWallList.add(c);
-        }
+//        for (int x = 0; x < (mWTileCount); x++) {
+//        	c = new WallCoordinate(x, 0, rand.nextInt(3)+1);
+//			mWallList.add(c);
+//            c = new WallCoordinate(x, (mHTileCount) - 1, rand.nextInt(3)+1);
+//			mWallList.add(c);
+//        } 	
+//        for (int y = 1; y < (mHTileCount) - 1; y++) {
+//        	c = new WallCoordinate(0, y, rand.nextInt(3)+1);
+//			mWallList.add(c);
+//            c = new WallCoordinate((mWTileCount) - 1, y, rand.nextInt(3)+1);
+//			mWallList.add(c);
+//        }
         
-        //level selection
-        XmlPullParser wallParser;        
-        switch ((int)level) {
-		case 2:
-			wallParser = getResources().getXml(R.xml.walls2);
-			break;			
-		case 3:
-			wallParser = getResources().getXml(R.xml.walls3);
-			break;		
-		case 4:
-			wallParser = getResources().getXml(R.xml.walls4);
-			break;			
-		case 5:
-			wallParser = getResources().getXml(R.xml.walls5);
-			break;
-		default:
-			wallParser = getResources().getXml(R.xml.walls1);
-		}        
+//        //level selection
+//        XmlPullParser wallParser;        
+//        switch ((int)level) {
+//		case 2:
+//			wallParser = getResources().getXml(R.xml.walls2);
+//			break;			
+//		case 3:
+//			wallParser = getResources().getXml(R.xml.walls3);
+//			break;		
+//		case 4:
+//			wallParser = getResources().getXml(R.xml.walls4);
+//			break;			
+//		case 5:
+//			wallParser = getResources().getXml(R.xml.walls5);
+//			break;
+//		default:
+//			wallParser = getResources().getXml(R.xml.walls1);
+//		}        
+//        
+//        //adding walls
+//        try {
+//			while (wallParser.getEventType()!= XmlPullParser.END_DOCUMENT) {
+//			    if (wallParser.getEventType() == XmlPullParser.START_TAG
+//			    		&& wallParser.getName().equals("horizontal")) {
+//			    	wallParser.next();
+//			    	while (wallParser.getName().equals("wall")) {
+//			    		if (wallParser.getEventType()== XmlPullParser.END_TAG) {
+//			    			wallParser.next();
+//			    			continue;
+//			    		}
+//			    		String length = wallParser.getAttributeValue(null, "length");
+//			    		String startX = wallParser.getAttributeValue(null, "startX");
+//			    		String startY = wallParser.getAttributeValue(null, "startY");
+//			    		for (int i = 0; i < Integer.parseInt(length); i++) {
+//			    			c = new WallCoordinate(Integer.parseInt(startX)+i,
+//			    					Integer.parseInt(startY), rand.nextInt(3)+1);
+//			    			if ((c.getX()<(mWTileCount))&(c.getY()<(mHTileCount))){
+//			    				mWallList.add(c);
+//			    			}
+//			    		}
+//			    	wallParser.next();
+//			        }
+//			    	
+//			    } else{
+//			    	if (wallParser.getEventType() == XmlPullParser.START_TAG
+//				    		&& wallParser.getName().equals("vertical")) {
+//				    	wallParser.next();
+//				    	while (wallParser.getName().equals("wall")) {
+//				    		if (wallParser.getEventType()== XmlPullParser.END_TAG) {
+//				    			wallParser.next();
+//				    			continue;
+//				    		}
+//				    		String length = wallParser.getAttributeValue(null, "length");
+//				    		String startX = wallParser.getAttributeValue(null, "startX");
+//				    		String startY = wallParser.getAttributeValue(null, "startY");
+//				    		for (int i = 0; i < Integer.parseInt(length); i++) {
+//				    			c = new WallCoordinate(Integer.parseInt(startX),
+//				    					Integer.parseInt(startY)+i, rand.nextInt(3)+1);
+//				    			if (c.getX()<(mWTileCount)&c.getY()<(mHTileCount)){
+//				    				mWallList.add(c);
+//				    			}
+//				    		}
+//				    	wallParser.next();
+//				        }
+//				    	
+//				    } else{			    	 
+//				    	wallParser.next();
+//				    }
+//			    }	
+//			}
+//		} catch (XmlPullParserException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}   
         
-        //adding walls
-        try {
-			while (wallParser.getEventType()!= XmlPullParser.END_DOCUMENT) {
-			    if (wallParser.getEventType() == XmlPullParser.START_TAG
-			    		&& wallParser.getName().equals("horizontal")) {
-			    	wallParser.next();
-			    	while (wallParser.getName().equals("wall")) {
-			    		if (wallParser.getEventType()== XmlPullParser.END_TAG) {
-			    			wallParser.next();
-			    			continue;
-			    		}
-			    		String length = wallParser.getAttributeValue(null, "length");
-			    		String startX = wallParser.getAttributeValue(null, "startX");
-			    		String startY = wallParser.getAttributeValue(null, "startY");
-			    		for (int i = 0; i < Integer.parseInt(length); i++) {
-			    			c = new WallCoordinate(Integer.parseInt(startX)+i,
-			    					Integer.parseInt(startY), rand.nextInt(3)+1);
-			    			if ((c.getX()<(mWTileCount))&(c.getY()<(mHTileCount))){
-			    				mWallList.add(c);
-			    			}
-			    		}
-			    	wallParser.next();
-			        }
-			    	
-			    } else{
-			    	if (wallParser.getEventType() == XmlPullParser.START_TAG
-				    		&& wallParser.getName().equals("vertical")) {
-				    	wallParser.next();
-				    	while (wallParser.getName().equals("wall")) {
-				    		if (wallParser.getEventType()== XmlPullParser.END_TAG) {
-				    			wallParser.next();
-				    			continue;
-				    		}
-				    		String length = wallParser.getAttributeValue(null, "length");
-				    		String startX = wallParser.getAttributeValue(null, "startX");
-				    		String startY = wallParser.getAttributeValue(null, "startY");
-				    		for (int i = 0; i < Integer.parseInt(length); i++) {
-				    			c = new WallCoordinate(Integer.parseInt(startX),
-				    					Integer.parseInt(startY)+i, rand.nextInt(3)+1);
-				    			if (c.getX()<(mWTileCount)&c.getY()<(mHTileCount)){
-				    				mWallList.add(c);
-				    			}
-				    		}
-				    	wallParser.next();
-				        }
-				    	
-				    } else{			    	 
-				    	wallParser.next();
-				    }
-			    }	
+        Bitmap  mLevelImage = BitmapFactory.decodeResource(getResources(), R.drawable.level1);
+        for (int i = 0; i < mLevelImage.getWidth(); i++) {
+			for (int j = 0; j < mLevelImage.getHeight(); j++) {
+				if (mLevelImage.getPixel(i, j)==Color.BLACK ){
+					c = new WallCoordinate(i,j, rand.nextInt(3)+1);
+					if (c.getX()<=(mWTileCount)&c.getY()<=(mHTileCount)){
+	    				mWallList.add(c);
+					}
+				}
 			}
-		} catch (XmlPullParserException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}        
+		}
+        
+        
+        
+        
         for (int i = 0; i < mApplesNumber; i++) {				
         	addRandomApple(APLLE_IMAGE);        
         }

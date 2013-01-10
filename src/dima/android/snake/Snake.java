@@ -10,6 +10,10 @@ import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import static dima.android.snake.Const.READY;
+import static dima.android.snake.Const.PAUSE;
+import static dima.android.snake.Const.RUNNING;;
+
 
 
 public class Snake extends Activity {
@@ -41,14 +45,14 @@ public class Snake extends Activity {
         mSnakeView.setTextView((TextView) findViewById(R.id.text));
         if (savedInstanceState == null) {
             // just launched 
-            mSnakeView.setMode(SnakeView.READY);
+            mSnakeView.setMode(READY);
         } else {
             // restored
             map = savedInstanceState.getBundle(ICICLE_KEY);
             if (map != null) {
                 mSnakeView.restoreState(map);
             } else {
-                mSnakeView.setMode(SnakeView.PAUSE);
+                mSnakeView.setMode(PAUSE);
             }
         }    
     }
@@ -61,8 +65,8 @@ public class Snake extends Activity {
     
     @Override
     public boolean onMenuOpened(int featureId, Menu menu){
-    	if (mSnakeView.getMode()==SnakeView.RUNNING){
-			mSnakeView.setMode(SnakeView.PAUSE);
+    	if (mSnakeView.getMode()==RUNNING){
+			mSnakeView.setMode(PAUSE);
     	}
     	if (mSnakeView.getMusic()){
     		mSnakeView.mPlayer.pause();
@@ -72,8 +76,8 @@ public class Snake extends Activity {
     
     @Override
     public void onOptionsMenuClosed(Menu menu){
-    	if (mSnakeView.getMode()==SnakeView.PAUSE){
-			mSnakeView.setMode(SnakeView.RUNNING);
+    	if (mSnakeView.getMode()==PAUSE){
+			mSnakeView.setMode(RUNNING);
     	}
     	if (mSnakeView.getMusic()){
     		mSnakeView.mPlayer.start();
@@ -118,7 +122,7 @@ public class Snake extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
-        mSnakeView.setMode(SnakeView.PAUSE);
+        mSnakeView.setMode(PAUSE);
         if (mSnakeView.getMusic()){
     		mSnakeView.mPlayer.pause();
     	}
