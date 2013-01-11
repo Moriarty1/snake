@@ -1,11 +1,9 @@
 package dima.android.snake;
 
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
@@ -18,31 +16,27 @@ import android.media.SoundPool;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
-import android.util.SparseIntArray;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
-import static dima.android.snake.Const.*;
 
 public class SnakeView extends TileView {
     //private static final String TAG = "SnakeView";
+	
+	private Mode mMode = Mode.READY;
+	
+	private Direction mDirection = Direction.NORTH;
+	private Direction mNextDirection;
     
-	private int mMode = READY;
-        
-    private int mDirection = NORTH,
-    			mNextDirection = NORTH;
-    
-
-    
-    private long 
+    private int 
     	mLevel,
     	mLastLevel = 5, //TODO change
     	mScore,
     	mMoveDelay,
     	mLongPressDelay = 1000, //TODO Need?   
-    	mLastMove,
-    	mLastTouch,
+    	
+    	
     	mBonus,
     	mBonusLeft,
     	mBonusTime,
@@ -51,6 +45,10 @@ public class SnakeView extends TileView {
     	mLevelUp,
     	mLevelUpLeft, 
     	mSnakeStartLength;
+    
+    private long 
+    	mLastMove, 
+    	mLastTouch;
     
 //    private long mLevel;
 //    private long mLastLevel = 5;
@@ -72,7 +70,7 @@ public class SnakeView extends TileView {
     //sound
     //AudioManager mAudioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
     private SoundPool soundPool;
-    private SparseIntArray soundsMap;
+    private HashMap<Sounds, Integer> soundsMap;
     protected MediaPlayer mPlayer;
     private boolean mSounds;
     private boolean mMusic=false;
@@ -80,6 +78,9 @@ public class SnakeView extends TileView {
     public boolean getMusic(){
     	return mMusic;
     }
+    
+    
+    
     
     private List<Coordinate> mSnakeTrail = new ArrayList<Coordinate>();
     private List<Coordinate> mAppleList = new ArrayList<Coordinate>();
@@ -120,11 +121,11 @@ public class SnakeView extends TileView {
         super(context, attrs);
         
         soundPool = new SoundPool(4, AudioManager.STREAM_MUSIC, 100);
-        soundsMap = new SparseIntArray();
-        soundsMap.put(SOUND_STEP, soundPool.load(getContext(),R.raw.step , 1));
-        soundsMap.put(SOUND_LEVELUP, soundPool.load(getContext(),R.raw.levelup , 1));
-        soundsMap.put(SOUND_BITE, soundPool.load(getContext(),R.raw.bite , 1));
-        soundsMap.put(SOUND_CRASH, soundPool.load(getContext(),R.raw.damage , 1));
+        soundsMap = new HashMap<Sounds, Integer>();
+        
+        for (Sounds sounds : Sounds.values()) {
+        	soundsMap.put(sounds, soundPool.load(getContext(),sounds.sound , 1));
+        }
    }
 
     //load settings
@@ -162,7 +163,7 @@ public class SnakeView extends TileView {
     		mAppleList = mAppleList.subList(0, (int)mApplesNumber);
     	} else{
     		while (mApplesNumber>mAppleList.size()){
-    			addRandomApple(APLLE_IMAGE);
+    			addRandomApple(Tiles.APLLE_IMAGE);
     		}
     	}
     }
@@ -174,16 +175,21 @@ public class SnakeView extends TileView {
     	//mWTileCount = Snake.prefs.getBoolean("double", false)?2*TILE_COUNT:TILE_COUNT;
     	TileSizeChange();
     	Resources r = this.getContext().getResources();
-        resetTiles(10);
-        loadTile(WALL_IMAGE_1, r.getDrawable(R.drawable.snake_wall_1));
-        loadTile(WALL_IMAGE_2, r.getDrawable(R.drawable.snake_wall_2));
-        loadTile(WALL_IMAGE_3, r.getDrawable(R.drawable.snake_wall_3));
-        loadTile(HEAD_IMAGE, r.getDrawable(R.drawable.snake_head));
-        loadTile(SNAKE_IMAGE, r.getDrawable(R.drawable.snake_body));
-        loadTile(APLLE_IMAGE, r.getDrawable(R.drawable.snake_apple));
-        loadTile(APLLE_LV_IMAGE, r.getDrawable(R.drawable.snake_apple_lv));
-        loadTile(APLLE_BONUS_IMAGE, r.getDrawable(R.drawable.snake_apple_bonus));
-        loadTile(BACKGROUND_IMAGE, r.getDrawable(R.drawable.snake_background));    	
+        resetTiles(9);
+        
+        for (Tiles tiles : Tiles.values()) {
+			loadTile(tiles.ordinal(), r.getDrawable(tiles.tile));
+		}
+        
+//        loadTile(Tiles.WALL_IMAGE_1.ordinal(), r.getDrawable(R.drawable.snake_wall_1));
+//        loadTile(Tiles.WALL_IMAGE_2.ordinal(), r.getDrawable(R.drawable.snake_wall_2));
+//        loadTile(Tiles.WALL_IMAGE_3.ordinal(), r.getDrawable(R.drawable.snake_wall_3));
+//        loadTile(Tiles.HEAD_IMAGE.ordinal(), r.getDrawable(R.drawable.snake_head));
+//        loadTile(Tiles.SNAKE_IMAGE.ordinal(), r.getDrawable(R.drawable.snake_body));
+//        loadTile(Tiles.APLLE_IMAGE.ordinal(), r.getDrawable(R.drawable.snake_apple));
+//        loadTile(Tiles.APLLE_LV_IMAGE.ordinal(), r.getDrawable(R.drawable.snake_apple_lv));
+//        loadTile(Tiles.APLLE_BONUS_IMAGE.ordinal(), r.getDrawable(R.drawable.snake_apple_bonus));
+//        loadTile(Tiles.BACKGROUND_IMAGE.ordinal(), r.getDrawable(R.drawable.snake_background));    	
     }
     public void initNewGame() {
     	loadSettings();
@@ -194,7 +200,7 @@ public class SnakeView extends TileView {
         initNewLevel(mLevel);
     }
     
-    public void initNewLevel(long level) {
+    public void initNewLevel(int level) {
     	initSnakeView();
     	mLevel=level;
         mBonusLeft=mBonus;
@@ -208,100 +214,11 @@ public class SnakeView extends TileView {
 
         //initiation 
         mSnakeTrail.add(new Coordinate(0, 1)); //head
-        mNextDirection = EAST;
+        mNextDirection = Direction.EAST;
         
         Random rand = new Random();
         WallCoordinate c;
-//        for (int x = 0; x < (mWTileCount); x++) {
-//        	c = new WallCoordinate(x, 0, rand.nextInt(3)+1);
-//			mWallList.add(c);
-//            c = new WallCoordinate(x, (mHTileCount) - 1, rand.nextInt(3)+1);
-//			mWallList.add(c);
-//        } 	
-//        for (int y = 1; y < (mHTileCount) - 1; y++) {
-//        	c = new WallCoordinate(0, y, rand.nextInt(3)+1);
-//			mWallList.add(c);
-//            c = new WallCoordinate((mWTileCount) - 1, y, rand.nextInt(3)+1);
-//			mWallList.add(c);
-//        }
-        
-//        //level selection
-//        XmlPullParser wallParser;        
-//        switch ((int)level) {
-//		case 2:
-//			wallParser = getResources().getXml(R.xml.walls2);
-//			break;			
-//		case 3:
-//			wallParser = getResources().getXml(R.xml.walls3);
-//			break;		
-//		case 4:
-//			wallParser = getResources().getXml(R.xml.walls4);
-//			break;			
-//		case 5:
-//			wallParser = getResources().getXml(R.xml.walls5);
-//			break;
-//		default:
-//			wallParser = getResources().getXml(R.xml.walls1);
-//		}        
-//        
-//        //adding walls
-//        try {
-//			while (wallParser.getEventType()!= XmlPullParser.END_DOCUMENT) {
-//			    if (wallParser.getEventType() == XmlPullParser.START_TAG
-//			    		&& wallParser.getName().equals("horizontal")) {
-//			    	wallParser.next();
-//			    	while (wallParser.getName().equals("wall")) {
-//			    		if (wallParser.getEventType()== XmlPullParser.END_TAG) {
-//			    			wallParser.next();
-//			    			continue;
-//			    		}
-//			    		String length = wallParser.getAttributeValue(null, "length");
-//			    		String startX = wallParser.getAttributeValue(null, "startX");
-//			    		String startY = wallParser.getAttributeValue(null, "startY");
-//			    		for (int i = 0; i < Integer.parseInt(length); i++) {
-//			    			c = new WallCoordinate(Integer.parseInt(startX)+i,
-//			    					Integer.parseInt(startY), rand.nextInt(3)+1);
-//			    			if ((c.getX()<(mWTileCount))&(c.getY()<(mHTileCount))){
-//			    				mWallList.add(c);
-//			    			}
-//			    		}
-//			    	wallParser.next();
-//			        }
-//			    	
-//			    } else{
-//			    	if (wallParser.getEventType() == XmlPullParser.START_TAG
-//				    		&& wallParser.getName().equals("vertical")) {
-//				    	wallParser.next();
-//				    	while (wallParser.getName().equals("wall")) {
-//				    		if (wallParser.getEventType()== XmlPullParser.END_TAG) {
-//				    			wallParser.next();
-//				    			continue;
-//				    		}
-//				    		String length = wallParser.getAttributeValue(null, "length");
-//				    		String startX = wallParser.getAttributeValue(null, "startX");
-//				    		String startY = wallParser.getAttributeValue(null, "startY");
-//				    		for (int i = 0; i < Integer.parseInt(length); i++) {
-//				    			c = new WallCoordinate(Integer.parseInt(startX),
-//				    					Integer.parseInt(startY)+i, rand.nextInt(3)+1);
-//				    			if (c.getX()<(mWTileCount)&c.getY()<(mHTileCount)){
-//				    				mWallList.add(c);
-//				    			}
-//				    		}
-//				    	wallParser.next();
-//				        }
-//				    	
-//				    } else{			    	 
-//				    	wallParser.next();
-//				    }
-//			    }	
-//			}
-//		} catch (XmlPullParserException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}   
+   
         
         Bitmap  mLevelImage = BitmapFactory.decodeResource(getResources(), R.drawable.level1);
         for (int i = 0; i < mLevelImage.getWidth(); i++) {
@@ -315,14 +232,11 @@ public class SnakeView extends TileView {
 			}
 		}
         
-        
-        
-        
         for (int i = 0; i < mApplesNumber; i++) {				
-        	addRandomApple(APLLE_IMAGE);        
+        	addRandomApple(Tiles.APLLE_IMAGE);        
         }
         if ((mLevelUp==0) & (mLevel!=mLastLevel)) {
-    		addRandomApple(APLLE_LV_IMAGE);
+    		addRandomApple(Tiles.APLLE_LV_IMAGE);
     		mLevelUpLeft--;		
     	} 
     }
@@ -350,21 +264,21 @@ public class SnakeView extends TileView {
         map.putIntArray("mAppleLvList", coordArrayListToArray(mAppleLvList,2));
         map.putIntArray("mAppleBonusList", coordArrayListToArray(mAppleBonusList,2));
         map.putIntArray("mWallList", coordArrayListToArray(mWallList,3));
-        map.putInt("mDirection", Integer.valueOf(mDirection));
-        map.putInt("mNextDirection", Integer.valueOf(mNextDirection));
-        map.putLong("mMoveDelay", Long.valueOf(mMoveDelay));
-        map.putLong("mScore", Long.valueOf(mScore));
+        map.putString("mDirection", mDirection.toString());
+        map.putString("mNextDirection", mNextDirection.toString());
+        map.putInt("mMoveDelay", Integer.valueOf(mMoveDelay));
+        map.putInt("mScore", Integer.valueOf(mScore));
         map.putIntArray("mSnakeTrail", coordArrayListToArray(mSnakeTrail,2));
         
-        map.putLong("mLevel", Long.valueOf(mLevel));
-        map.putLong("mApplesNumber", Long.valueOf(mApplesNumber));
-        map.putLong("mBonus", Long.valueOf(mBonus));
-        map.putLong("mBonusTime", Long.valueOf(mBonusTime));
-        map.putLong("mLevelUp", Long.valueOf(mLevelUp));
-        map.putLong("mSnakeStartLength", Long.valueOf(mSnakeStartLength));
-        map.putLong("mBonusLeft", Long.valueOf(mBonusLeft));
-        map.putLong("mBonusTimeLeft", Long.valueOf(mBonusTimeLeft));
-        map.putLong("mLevelUpLeft", Long.valueOf(mLevelUpLeft));
+        map.putInt("mLevel", Integer.valueOf(mLevel));
+        map.putInt("mApplesNumber", Integer.valueOf(mApplesNumber));
+        map.putInt("mBonus", Integer.valueOf(mBonus));
+        map.putInt("mBonusTime", Integer.valueOf(mBonusTime));
+        map.putInt("mLevelUp", Integer.valueOf(mLevelUp));
+        map.putInt("mSnakeStartLength", Integer.valueOf(mSnakeStartLength));
+        map.putInt("mBonusLeft", Integer.valueOf(mBonusLeft));
+        map.putInt("mBonusTimeLeft", Integer.valueOf(mBonusTimeLeft));
+        map.putInt("mLevelUpLeft", Integer.valueOf(mLevelUpLeft));
         
         return map;
     }
@@ -394,26 +308,26 @@ public class SnakeView extends TileView {
     
     //restore game      
     public void restoreState(Bundle icicle) {
-        setMode(PAUSE); 
+        setMode(Mode.PAUSE); 
         mAppleList = coordArrayToArrayList(icicle.getIntArray("mAppleList"));
         mAppleLvList = coordArrayToArrayList(icicle.getIntArray("mAppleLvList"));
         mAppleBonusList = coordArrayToArrayList(icicle.getIntArray("mAppleBonusList"));
         mWallList = wallCoordArrayToArrayList(icicle.getIntArray("mWallList"));
-        mDirection = icicle.getInt("mDirection");
-        mNextDirection = icicle.getInt("mNextDirection");
-        mMoveDelay = icicle.getLong("mMoveDelay");
-        mScore = icicle.getLong("mScore");
+        mDirection = Direction.valueOf(icicle.getString("mDirection"));
+        mNextDirection = Direction.valueOf(icicle.getString("mNextDirection"));
+        mMoveDelay = icicle.getInt("mMoveDelay");
+        mScore = icicle.getInt("mScore");
         mSnakeTrail = coordArrayToArrayList(icicle.getIntArray("mSnakeTrail"));
         
-        mLevel = icicle.getLong("mLevel");
-        mApplesNumber = icicle.getLong("mApplesNumber");
-        mBonus = icicle.getLong("mBonus");
-        mBonusTime = icicle.getLong("mBonusTime");
-        mLevelUp = icicle.getLong("mLevelUp");
-        mSnakeStartLength = icicle.getLong("mSnakeStartLength");
-        mBonusLeft = icicle.getLong("mBonusLeft");
-        mBonusTimeLeft = icicle.getLong("mBonusTimeLeft");
-        mLevelUpLeft = icicle.getLong("mLevelUpLeft");
+        mLevel = icicle.getInt("mLevel");
+        mApplesNumber = icicle.getInt("mApplesNumber");
+        mBonus = icicle.getInt("mBonus");
+        mBonusTime = icicle.getInt("mBonusTime");
+        mLevelUp = icicle.getInt("mLevelUp");
+        mSnakeStartLength = icicle.getInt("mSnakeStartLength");
+        mBonusLeft = icicle.getInt("mBonusLeft");
+        mBonusTimeLeft = icicle.getInt("mBonusTimeLeft");
+        mLevelUpLeft = icicle.getInt("mLevelUpLeft");
     }  
 
     //toush control    
@@ -424,52 +338,52 @@ public class SnakeView extends TileView {
     	
     			mLastTouch = System.currentTimeMillis();
     			
-    			if ((mMode == PAUSE) && (System.currentTimeMillis() - mLastTouch > mLongPressDelay)){
-    				setMode(PAUSE);
+    			if ((mMode == Mode.PAUSE) && (System.currentTimeMillis() - mLastTouch > mLongPressDelay)){
+    				setMode(Mode.PAUSE);
     				return(true);
     			}
     			
-    			if (mMode == READY | mMode == LOSE) {
+    			if (mMode == Mode.READY | mMode == Mode.LOSE) {
     				mLevel = 1;
     				initNewGame();
-    				setMode(RUNNING);
+    				setMode(Mode.RUNNING);
     				update();
     				return (true);
     			}
     			
-    			if (mMode == LEVELUP) {
+    			if (mMode == Mode.LEVELUP) {
     				if (mLevel != mLastLevel){
     					mLevel++;
     					initNewLevel(mLevel);
-    					setMode(RUNNING);
+    					setMode(Mode.RUNNING);
     					update();
     					return true;
     				}
     			}
 
-    			if (mMode == PAUSE) {
-    				setMode(RUNNING);
+    			if (mMode == Mode.PAUSE) {
+    				setMode(Mode.RUNNING);
     				update();
     				return true;
     			}
     			
     			if ((System.currentTimeMillis() - mLastTouch > mLongPressDelay)){
-    				setMode(PAUSE);
+    				setMode(Mode.PAUSE);
     				return true;
     			}
     			
     			Coordinate xy = ifNeedRotate270(event.getX(),event.getY());
-    			if ((mDirection == NORTH)||(mDirection == SOUTH)){
+    			if ((mDirection == Direction.NORTH)||(mDirection == Direction.SOUTH)){
     				mNextDirection = 
     					(mSnakeTrail.get(0).getX() - (xy.getX() / mTileSize)>=0)?
-    						WEST:EAST;
+    						Direction.WEST:Direction.EAST;
     				return true;
     			}    	
     	
-    			if ((mDirection == WEST)||(mDirection == EAST)){
+    			if ((mDirection == Direction.WEST)||(mDirection == Direction.EAST)){
     				mNextDirection = 
     					(mSnakeTrail.get(0).getY() - (xy.getY() / mTileSize)>=0)?
-    						NORTH:SOUTH;
+    						Direction.NORTH:Direction.SOUTH;
     				return true;
     			}    	
     			break;
@@ -477,8 +391,8 @@ public class SnakeView extends TileView {
     			break;
     			
     		default:
-    			if ((mMode == RUNNING) && (System.currentTimeMillis() - mLastTouch > mLongPressDelay)){
-    				setMode(PAUSE);
+    			if ((mMode == Mode.RUNNING) && (System.currentTimeMillis() - mLastTouch > mLongPressDelay)){
+    				setMode(Mode.PAUSE);
     				return true;
     			}
         }
@@ -490,36 +404,36 @@ public class SnakeView extends TileView {
     }
     
     //get Mode
-    public int getMode() {
+    public Mode getMode() {
     	return this.mMode;
     }
     
     //set Mode
-    public void setMode(int newMode) {
-        int oldMode = mMode;
+    public void setMode(Mode newMode) {
+    	Mode oldMode = mMode;
         mMode = newMode;
-        if (newMode == RUNNING & oldMode != RUNNING) {
+        if (newMode == Mode.RUNNING & oldMode != Mode.RUNNING) {
             mStatusText.setVisibility(View.INVISIBLE);
             update();
             return;
         }
         Resources res = getContext().getResources();
         CharSequence str = "";
-        if (newMode == PAUSE) {
+        if (newMode == Mode.PAUSE) {
         	str = res.getString(R.string.pause) 
         			+ "\n" + res.getString(R.string.score_) + mScore
                     + "\n" + res.getString(R.string.level_) + mLevel
                     + "\n" + res.getString(R.string.touch_to_play);
         }
-        if (newMode == READY) {
+        if (newMode == Mode.READY) {
             str = res.getText(R.string.touch_to_play);
         }
-        if (newMode == LOSE) {
+        if (newMode == Mode.LOSE) {
             str = res.getString(R.string.game_over)
             	  + "\n" + res.getString(R.string.score_)+ mScore
                   + "\n" + res.getString(R.string.touch_to_play);
         }
-        if (newMode == LEVELUP) {
+        if (newMode == Mode.LEVELUP) {
             str = res.getString(R.string.levelup)
             	  + "\n" + res.getString(R.string.next_level_)+ (mLevel+1)
                   + "\n" + res.getString(R.string.touch_to_play);
@@ -542,7 +456,8 @@ public class SnakeView extends TileView {
     }
     
     // add random apple   
-    private void addRandomApple(int kind) {
+    @SuppressWarnings("incomplete-switch")
+	private void addRandomApple(Tiles kind) {
         Coordinate newCoord = null;
         boolean found = false;
         label:
@@ -568,7 +483,7 @@ public class SnakeView extends TileView {
             	continue label;
             }                
             found = true;
-        }        
+        }
         switch (kind) {
 		case APLLE_IMAGE:
 			mAppleList.add(newCoord);
@@ -584,7 +499,7 @@ public class SnakeView extends TileView {
      
     //updating screen     
     public void update() {
-        if (mMode == RUNNING) {
+        if (mMode == Mode.RUNNING) {
         	checkSettings();
             long now = System.currentTimeMillis();
             if (now - mLastMove > mMoveDelay) {                
@@ -610,14 +525,14 @@ public class SnakeView extends TileView {
     //draws  apples    
     private void updateApples() {    	
     	for (Coordinate c : mAppleList) {
-            setTile(APLLE_IMAGE, c.getX(), c.getY());
+            setTile(Tiles.APLLE_IMAGE.ordinal(), c.getX(), c.getY());
         }
     }
     
     //draws  applesLv    
     private void updateApplesLv() {       
     	for (Coordinate c : mAppleLvList) {
-            setTile(APLLE_LV_IMAGE, c.getX(), c.getY());
+            setTile(Tiles.APLLE_LV_IMAGE.ordinal(), c.getX(), c.getY());
         }
     }
     
@@ -630,13 +545,13 @@ public class SnakeView extends TileView {
         	}        	
     	}
     	for (Coordinate c : mAppleBonusList) {
-    		setTile(APLLE_BONUS_IMAGE, c.getX(), c.getY());
+    		setTile(Tiles.APLLE_BONUS_IMAGE.ordinal(), c.getX(), c.getY());
     	}
     }
 
     //draws snake
 	private void updateSnake() {
-		if (mMode == RUNNING) {
+		if (mMode == Mode.RUNNING) {
 			boolean growSnake = false;
 			
 			// move head
@@ -645,18 +560,18 @@ public class SnakeView extends TileView {
 			mDirection = mNextDirection;
 
 			newHead = new Coordinate(
-					head.getX() + ( (mDirection == EAST) ?	1 : 
-									(mDirection == WEST) ? -1 : 0),
-					head.getY() + (	(mDirection == SOUTH)?	1 : 
-									(mDirection == NORTH)? -1 : 0));
+					head.getX() + ( (mDirection == Direction.EAST) ?  1 : 
+									(mDirection == Direction.WEST) ? -1 : 0),
+					head.getY() + (	(mDirection == Direction.SOUTH)?  1 : 
+									(mDirection == Direction.NORTH)? -1 : 0));
 
 			// collisions with Wall or Snake, except last trail 
 			if (collision(newHead, mWallList) | ((collision(newHead, mSnakeTrail)) 
 							& collisionCoordinate != mSnakeTrail.get(mSnakeTrail.size() - 1))){
-				setMode(LOSE);
+				setMode(Mode.LOSE);
 				// play crash
 				if (mSounds){
-					soundPool.play(soundsMap.get(SOUND_CRASH), 1, 1, 1, 0, 1);
+					soundPool.play(soundsMap.get(Sounds.SOUND_CRASH), 1, 1, 1, 0, 1);
 				}
 				return;
 			}
@@ -666,10 +581,10 @@ public class SnakeView extends TileView {
 				
 				// play levelup
 				if (mSounds){
-    				soundPool.play(soundsMap.get(SOUND_LEVELUP), 1, 1, 1, 0, 1);
+    				soundPool.play(soundsMap.get(Sounds.SOUND_LEVELUP), 1, 1, 1, 0, 1);
 				}
 				mAppleLvList.remove(collisionCoordinate);
-				setMode(LEVELUP);
+				setMode(Mode.LEVELUP);
 				return;
 			}
 
@@ -678,15 +593,15 @@ public class SnakeView extends TileView {
 				
 				// play bite
 				if (mSounds){
-    				soundPool.play(soundsMap.get(SOUND_BITE), 1, 1, 1, 0, 1);
+    				soundPool.play(soundsMap.get(Sounds.SOUND_BITE), 1, 1, 1, 0, 1);
 				}
 				mAppleList.remove(collisionCoordinate);
-				addRandomApple(APLLE_IMAGE);
+				addRandomApple(Tiles.APLLE_IMAGE);
 				mScore += mLevel;
 				mMoveDelay -= 10;
 				if (mBonusLeft == 0) {
 					mAppleBonusList.clear();
-					addRandomApple(APLLE_BONUS_IMAGE);
+					addRandomApple(Tiles.APLLE_BONUS_IMAGE);
 					mBonusTimeLeft = mBonusTime;
 					mBonusLeft = mBonus;
 				} else {
@@ -696,7 +611,7 @@ public class SnakeView extends TileView {
 				if ((mAppleLvList.isEmpty()) & (mLevelUpLeft >= 0)
 						& (mLevel != mLastLevel)) {
 					if (mLevelUpLeft == 0) {
-						addRandomApple(APLLE_LV_IMAGE);
+						addRandomApple(Tiles.APLLE_LV_IMAGE);
 					}
 					mLevelUpLeft--;
 				}
@@ -705,7 +620,7 @@ public class SnakeView extends TileView {
 				
 				// play bite
 				if (mSounds){
-    				soundPool.play(soundsMap.get(SOUND_BITE), 1, 1, 1, 0, 1);
+    				soundPool.play(soundsMap.get(Sounds.SOUND_BITE), 1, 1, 1, 0, 1);
 				}
 				mAppleBonusList.remove(collisionCoordinate);
 				mScore += (mLevel * mBonusTimeLeft);
@@ -720,12 +635,16 @@ public class SnakeView extends TileView {
 			
 			// play step
 			if (mSounds){
-				soundPool.play(soundsMap.get(SOUND_STEP), 1, 1, 1, 0, 1);
+				soundPool.play(soundsMap.get(Sounds.SOUND_STEP), 1, 1, 1, 0, 1);
 			}
 			
 			//draw head or body
 			for (Coordinate c : mSnakeTrail) {
-				setTile(c.equals(newHead)?HEAD_IMAGE:SNAKE_IMAGE, c.getX(), c.getY());
+				if (c.equals(newHead)){
+					setTile(Tiles.HEAD_IMAGE.ordinal(), c.getX(), c.getY());
+				}else{
+					setTile(Tiles.SNAKE_IMAGE.ordinal(), c.getX(), c.getY());
+				}
 			}
 		}
 	}

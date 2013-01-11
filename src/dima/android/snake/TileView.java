@@ -78,7 +78,7 @@ public class TileView extends View {
 		mYOffset = ((h - (mTileSize * mYTileCount)) / 2);
 		//clearTiles();
     }
-
+    
     public void loadTile(int key, Drawable tile) {
         Bitmap bitmap = Bitmap.createBitmap(mTileSize, mTileSize, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
@@ -91,7 +91,7 @@ public class TileView extends View {
     public void clearTiles() {
     	for (int x = 0; x < (mWTileCount); x++) {
             for (int y = 0; y < (mHTileCount); y++) {
-                setTile((mTileArray.length-1), x, y);
+                setTile(0, x, y);
             }
         }
     }
@@ -118,7 +118,7 @@ public class TileView extends View {
     	super.onDraw(canvas);
         for (int x = 0; x < (mXTileCount); x += 1) {
             for (int y = 0; y < (mYTileCount); y += 1) {
-            	if (mTileGrid[x][y] > 0 ) {
+            	if (mTileArray != null){
                     	canvas.drawBitmap(mTileArray[mTileGrid[x][y]], 
                     		mXOffset + x * mTileSize, mYOffset + y * mTileSize,mPaint);
                 }  

@@ -10,11 +10,6 @@ import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
-import static dima.android.snake.Const.READY;
-import static dima.android.snake.Const.PAUSE;
-import static dima.android.snake.Const.RUNNING;;
-
-
 
 public class Snake extends Activity {
     public static SharedPreferences prefs;
@@ -45,14 +40,14 @@ public class Snake extends Activity {
         mSnakeView.setTextView((TextView) findViewById(R.id.text));
         if (savedInstanceState == null) {
             // just launched 
-            mSnakeView.setMode(READY);
+            mSnakeView.setMode(Mode.READY);
         } else {
             // restored
             map = savedInstanceState.getBundle(ICICLE_KEY);
             if (map != null) {
                 mSnakeView.restoreState(map);
             } else {
-                mSnakeView.setMode(PAUSE);
+                mSnakeView.setMode(Mode.PAUSE);
             }
         }    
     }
@@ -65,8 +60,8 @@ public class Snake extends Activity {
     
     @Override
     public boolean onMenuOpened(int featureId, Menu menu){
-    	if (mSnakeView.getMode()==RUNNING){
-			mSnakeView.setMode(PAUSE);
+    	if (mSnakeView.getMode()==Mode.RUNNING){
+			mSnakeView.setMode(Mode.PAUSE);
     	}
     	if (mSnakeView.getMusic()){
     		mSnakeView.mPlayer.pause();
@@ -76,8 +71,8 @@ public class Snake extends Activity {
     
     @Override
     public void onOptionsMenuClosed(Menu menu){
-    	if (mSnakeView.getMode()==PAUSE){
-			mSnakeView.setMode(RUNNING);
+    	if (mSnakeView.getMode()==Mode.PAUSE){
+			mSnakeView.setMode(Mode.RUNNING);
     	}
     	if (mSnakeView.getMusic()){
     		mSnakeView.mPlayer.start();
@@ -122,11 +117,10 @@ public class Snake extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
-        mSnakeView.setMode(PAUSE);
+        mSnakeView.setMode(Mode.PAUSE);
         if (mSnakeView.getMusic()){
     		mSnakeView.mPlayer.pause();
     	}
-        
     }
 
     @Override 
