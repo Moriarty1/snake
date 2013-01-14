@@ -10,19 +10,16 @@ import android.util.AttributeSet;
 import android.view.View;
 
 public class TileView extends View {
-	protected static final int TILE_COUNT = 18;
+	protected static final int TILE_COUNT = 18; //TODO delete
 	protected static int mTileSize;
-	private static int mXTileCount;
-	private static int mYTileCount;
-	protected static int mWTileCount = TILE_COUNT;
-	protected static int mHTileCount;
-    private static int mXOffset;
-    private static int mYOffset;
+	protected static Coordinate mAbsoluteTileCount;
+	private static Coordinate mTileCount;
+	private static Coordinate mOffset;
+
     private Bitmap[] mTileArray;
     private int[][] mTileGrid;
     private final Paint mPaint = new Paint();
     public static boolean mFirst=true;
-    
     
     //constructor  
     public TileView(Context context, AttributeSet attrs) {
@@ -49,34 +46,28 @@ public class TileView extends View {
     
     public void TileSizeChange(int w, int h, boolean rotation){
     	if (mFirst){
-    		if (h>w){
-    			mXTileCount = mWTileCount;
-    			mTileSize = (int) Math.floor((double)w / mXTileCount);    	
-    			mYTileCount = (int) Math.floor((double)h / mTileSize);
-    			mHTileCount = mYTileCount;
-    		}else{
-    			mYTileCount = mWTileCount;    	
-    			mTileSize = (int) Math.floor((double)h / mYTileCount);    	
-    			mXTileCount = (int) Math.floor((double)w / mTileSize);
-    			mHTileCount = mXTileCount;
+    		mTileSize = (int) Math.floor((double)(h>w?w:h) / TILE_COUNT);
+    		mAbsoluteTileCount = new Coordinate(TILE_COUNT, (int) Math.floor((double)(h<w?w:h) / mTileSize));
+    		mTileCount = new Coordinate(mAbsoluteTileCount);
+    		if (h<w){
+    			mTileCount.reverse();
     		}
 			mFirst=false;
     	}else{ 
     		if(rotation){
     			//change X Y
-    			mXTileCount ^= mYTileCount;
-    			mYTileCount ^= mXTileCount;
-    			mXTileCount ^= mYTileCount;
+    			mTileCount.reverse();
     		}
-    		mTileSize = (int) (	Math.floor((double)w / mXTileCount)<
-    							Math.floor((double)h / mYTileCount)?
-    			Math.floor((double)w / mXTileCount):
-    			Math.floor((double)h / mYTileCount));
+    		mTileSize = (int) (	Math.floor((double)w / mTileCount.getX())<
+    							Math.floor((double)h / mTileCount.getY())?
+    			Math.floor((double)w / mTileCount.getX()):
+    			Math.floor((double)h / mTileCount.getY()));
     	}
-    	mTileGrid = new int[mHTileCount][mHTileCount];
-    	mXOffset = ((w - (mTileSize * mXTileCount)) / 2);
-		mYOffset = ((h - (mTileSize * mYTileCount)) / 2);
-		//clearTiles();
+    	//Y>X
+    	mTileGrid = new int[mAbsoluteTileCount.getY()][mAbsoluteTileCount.getY()];
+    	
+    	mOffset = new Coordinate((w - (mTileSize * mTileCount.getX())) / 2, 
+    							(h - (mTileSize * mTileCount.getY())) / 2);
     }
     
     public void loadTile(int key, Drawable tile) {
@@ -89,8 +80,8 @@ public class TileView extends View {
     
     //clear or fill the background
     public void clearTiles() {
-    	for (int x = 0; x < (mWTileCount); x++) {
-            for (int y = 0; y < (mHTileCount); y++) {
+    	for (int x = 0; x < (mAbsoluteTileCount.getX()); x++) {
+            for (int y = 0; y < (mAbsoluteTileCount.getY()); y++) {
                 setTile(0, x, y);
             }
         }
@@ -99,13 +90,13 @@ public class TileView extends View {
     protected Coordinate ifNeedRotate90(int x, int y) {
     	return (getHeight()>getWidth()? 
     			new Coordinate(x,y): 
-    			new Coordinate(y,mYTileCount - ++x)); 
+    			new Coordinate(y,mTileCount.getY() - ++x)); 
     }
     
     protected Coordinate ifNeedRotate270(int x, int y) {
     	return (getHeight()>getWidth()? 
     			new Coordinate(x,y): 
-    			new Coordinate(mXTileCount - ++y,x)); 
+    			new Coordinate(mTileCount.getX() - ++y,x)); 
     }
     
     public void setTile(int tileindex, int x, int y) {
@@ -116,11 +107,12 @@ public class TileView extends View {
     @Override
     public void onDraw(Canvas canvas) {
     	super.onDraw(canvas);
-        for (int x = 0; x < (mXTileCount); x += 1) {
-            for (int y = 0; y < (mYTileCount); y += 1) {
+        for (int x = 0; x < (mTileCount.getX()); x += 1) {
+            for (int y = 0; y < (mTileCount.getY()); y += 1) {
             	if (mTileArray != null){
                     	canvas.drawBitmap(mTileArray[mTileGrid[x][y]], 
-                    		mXOffset + x * mTileSize, mYOffset + y * mTileSize,mPaint);
+                    		mOffset.getX() + x * mTileSize, 
+                    		mOffset.getY() + y * mTileSize,mPaint);
                 }  
             }
         }

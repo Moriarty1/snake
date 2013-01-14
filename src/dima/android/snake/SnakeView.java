@@ -171,7 +171,7 @@ public class SnakeView extends TileView {
     private void initSnakeView() {
     	setFocusable(true);
     	mFirst=true;
-    	mWTileCount = TILE_COUNT;
+    	//mWTileCount = TILE_COUNT;
     	//mWTileCount = Snake.prefs.getBoolean("double", false)?2*TILE_COUNT:TILE_COUNT;
     	TileSizeChange();
     	Resources r = this.getContext().getResources();
@@ -225,7 +225,8 @@ public class SnakeView extends TileView {
 			for (int j = 0; j < mLevelImage.getHeight(); j++) {
 				if (mLevelImage.getPixel(i, j)==Color.BLACK ){
 					c = new WallCoordinate(i,j, rand.nextInt(3)+1);
-					if (c.getX()<=(mWTileCount)&c.getY()<=(mHTileCount)){
+					if (c.getX()<=(mAbsoluteTileCount.getX())&
+							c.getY()<=(mAbsoluteTileCount.getY())){
 	    				mWallList.add(c);
 					}
 				}
@@ -463,8 +464,8 @@ public class SnakeView extends TileView {
         label:
         while (!found) {
             // choose new location
-            int newX = 1 + RNG.nextInt((mWTileCount) - 2);
-            int newY = 1 + RNG.nextInt((mHTileCount) - 2);
+            int newX = 1 + RNG.nextInt((mAbsoluteTileCount.getX()) - 2);
+            int newY = 1 + RNG.nextInt((mAbsoluteTileCount.getY()) - 2);
             newCoord = new Coordinate(newX, newY);
             
             if (collision(newCoord, mSnakeTrail)){
