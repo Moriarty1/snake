@@ -87,6 +87,10 @@
             android:entryValues="@array/orientatin_entryValues"
             android:key="orientation"
             android:title="@string/pref_title_orientation" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="negative"
+            android:title="@string/pref_title_negative" />
     </PreferenceCategory>
     
 </PreferenceScreen>

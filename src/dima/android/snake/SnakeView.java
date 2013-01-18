@@ -10,6 +10,9 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Paint;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
@@ -67,8 +70,20 @@ public class SnakeView extends TileView {
 //    private long mSnakeStartLength;
     private TextView mStatusText;
     
+    
+	
+	
+    static final float[] NEGATIVE_COLOR_MATRIX = { 
+	    -1.0f, 0, 0, 0, 255, //red
+	    0, -1.0f, 0, 0, 255, //green
+	    0, 0, -1.0f, 0, 255, //blue
+	    0, 0, 0, 1.0f, 0 //alpha  
+	  };
+	  
+	  ColorFilter mNegativeFilter = new ColorMatrixColorFilter(NEGATIVE_COLOR_MATRIX);
+	  //mNegative.setColorFilter(colorFilter_Negative);
+    
     //sound
-    //AudioManager mAudioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
     private SoundPool soundPool;
     private HashMap<Sounds, Integer> soundsMap;
     protected MediaPlayer mPlayer;
@@ -79,16 +94,13 @@ public class SnakeView extends TileView {
     	return mMusic;
     }
     
-    
-    
-    
     private List<Coordinate> mSnakeTrail = new ArrayList<Coordinate>();
     private List<Coordinate> mAppleList = new ArrayList<Coordinate>();
     private List<Coordinate> mAppleLvList = new ArrayList<Coordinate>();
     private List<Coordinate> mAppleBonusList = new ArrayList<Coordinate>();
     private List<WallCoordinate> mWallList = new ArrayList<WallCoordinate>();
     
-    Coordinate collisionCoordinate = null;
+    Coordinate mCollisionCoordinate = null;
    
     private static final Random RNG = new Random();
 
@@ -155,6 +167,11 @@ public class SnakeView extends TileView {
     			mPlayer.release();
 			}
     	}
+    	if (Snake.prefs.getBoolean("negative", false)){
+    		mPaint.setColorFilter(mNegativeFilter);
+    	}else{
+    		mPaint.setColorFilter(null);
+    	}
     }
     
     public void checkSettings(){
@@ -180,16 +197,6 @@ public class SnakeView extends TileView {
         for (Tiles tiles : Tiles.values()) {
 			loadTile(tiles.ordinal(), r.getDrawable(tiles.tile));
 		}
-        
-//        loadTile(Tiles.WALL_IMAGE_1.ordinal(), r.getDrawable(R.drawable.snake_wall_1));
-//        loadTile(Tiles.WALL_IMAGE_2.ordinal(), r.getDrawable(R.drawable.snake_wall_2));
-//        loadTile(Tiles.WALL_IMAGE_3.ordinal(), r.getDrawable(R.drawable.snake_wall_3));
-//        loadTile(Tiles.HEAD_IMAGE.ordinal(), r.getDrawable(R.drawable.snake_head));
-//        loadTile(Tiles.SNAKE_IMAGE.ordinal(), r.getDrawable(R.drawable.snake_body));
-//        loadTile(Tiles.APLLE_IMAGE.ordinal(), r.getDrawable(R.drawable.snake_apple));
-//        loadTile(Tiles.APLLE_LV_IMAGE.ordinal(), r.getDrawable(R.drawable.snake_apple_lv));
-//        loadTile(Tiles.APLLE_BONUS_IMAGE.ordinal(), r.getDrawable(R.drawable.snake_apple_bonus));
-//        loadTile(Tiles.BACKGROUND_IMAGE.ordinal(), r.getDrawable(R.drawable.snake_background));    	
     }
     public void initNewGame() {
     	loadSettings();
@@ -220,15 +227,21 @@ public class SnakeView extends TileView {
         WallCoordinate c;
    
         
-        Bitmap  mLevelImage = BitmapFactory.decodeResource(getResources(), R.drawable.level1);
-        for (int i = 0; i < mLevelImage.getWidth(); i++) {
-			for (int j = 0; j < mLevelImage.getHeight(); j++) {
-				if (mLevelImage.getPixel(i, j)==Color.BLACK ){
-					c = new WallCoordinate(i,j, rand.nextInt(3)+1);
-					if (c.getX()<=(mAbsoluteTileCount.getX())&
-							c.getY()<=(mAbsoluteTileCount.getY())){
-	    				mWallList.add(c);
-					}
+        //load level from picture
+        BitmapFactory.Options bitOpt=new BitmapFactory.Options();
+        bitOpt.inScaled=false;
+        Bitmap  mLevelImage = BitmapFactory.decodeResource(getResources(), R.drawable.level1, bitOpt);
+        int height = mLevelImage.getHeight();
+        int width = mLevelImage.getWidth();
+        int[] pixels = new int[height*width];
+        mLevelImage.getPixels(pixels, 0, width, 0, 0, width, height);
+        
+        for (int i = 0; i < pixels.length; i++) {
+			if (pixels[i]==Color.BLACK){
+				c = new WallCoordinate(i%width, i/width, rand.nextInt(3)+1);
+				if (c.getX()<(mAbsoluteTileCount.getX())&
+						c.getY()<(mAbsoluteTileCount.getY())){
+    				mWallList.add(c);
 				}
 			}
 		}
@@ -449,7 +462,7 @@ public class SnakeView extends TileView {
 		List<Coordinate> list2 = (List<Coordinate>) list;
     	for (Coordinate c : list2) {
         	if (c.equals(newCoord)) {
-        		this.collisionCoordinate= c;
+        		mCollisionCoordinate= c;
         		return true;
             }
         }
@@ -568,7 +581,7 @@ public class SnakeView extends TileView {
 
 			// collisions with Wall or Snake, except last trail 
 			if (collision(newHead, mWallList) | ((collision(newHead, mSnakeTrail)) 
-							& collisionCoordinate != mSnakeTrail.get(mSnakeTrail.size() - 1))){
+							& mCollisionCoordinate != mSnakeTrail.get(mSnakeTrail.size() - 1))){
 				setMode(Mode.LOSE);
 				// play crash
 				if (mSounds){
@@ -584,7 +597,7 @@ public class SnakeView extends TileView {
 				if (mSounds){
     				soundPool.play(soundsMap.get(Sounds.SOUND_LEVELUP), 1, 1, 1, 0, 1);
 				}
-				mAppleLvList.remove(collisionCoordinate);
+				mAppleLvList.remove(mCollisionCoordinate);
 				setMode(Mode.LEVELUP);
 				return;
 			}
@@ -596,7 +609,7 @@ public class SnakeView extends TileView {
 				if (mSounds){
     				soundPool.play(soundsMap.get(Sounds.SOUND_BITE), 1, 1, 1, 0, 1);
 				}
-				mAppleList.remove(collisionCoordinate);
+				mAppleList.remove(mCollisionCoordinate);
 				addRandomApple(Tiles.APLLE_IMAGE);
 				mScore += mLevel;
 				mMoveDelay -= 10;
@@ -623,7 +636,7 @@ public class SnakeView extends TileView {
 				if (mSounds){
     				soundPool.play(soundsMap.get(Sounds.SOUND_BITE), 1, 1, 1, 0, 1);
 				}
-				mAppleBonusList.remove(collisionCoordinate);
+				mAppleBonusList.remove(mCollisionCoordinate);
 				mScore += (mLevel * mBonusTimeLeft);
 				growSnake = true;
 			}

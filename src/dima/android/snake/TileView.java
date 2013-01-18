@@ -10,15 +10,17 @@ import android.util.AttributeSet;
 import android.view.View;
 
 public class TileView extends View {
-	protected static final int TILE_COUNT = 18; //TODO delete
+	private static final Coordinate NOT_LONG_SIZE = new Coordinate(18,24);
+	private static final Coordinate LONG_SIZE = new Coordinate(18,30);
+	
 	protected static int mTileSize;
 	protected static Coordinate mAbsoluteTileCount;
 	private static Coordinate mTileCount;
 	private static Coordinate mOffset;
 
     private Bitmap[] mTileArray;
-    private int[][] mTileGrid;
-    private final Paint mPaint = new Paint();
+    private static int[][] mTileGrid;
+    protected static Paint mPaint = new Paint();
     public static boolean mFirst=true;
     
     //constructor  
@@ -27,6 +29,13 @@ public class TileView extends View {
         super.setClickable(true);
     }
 
+    public int min(int x, int y){
+    	return x>y?y:x;
+    }
+    public int max(int x, int y){
+    	return x<y?y:x;
+    }
+    
     public void resetTiles(int tilecount) {
     	mTileArray = new Bitmap[tilecount];
     }
@@ -46,8 +55,12 @@ public class TileView extends View {
     
     public void TileSizeChange(int w, int h, boolean rotation){
     	if (mFirst){
-    		mTileSize = (int) Math.floor((double)(h>w?w:h) / TILE_COUNT);
-    		mAbsoluteTileCount = new Coordinate(TILE_COUNT, (int) Math.floor((double)(h<w?w:h) / mTileSize));
+    		//long screen or not
+    		if ((double)min(w, h)/max(w, h)>0.65) {
+    			mAbsoluteTileCount = new Coordinate(NOT_LONG_SIZE);
+    		}else{
+    			mAbsoluteTileCount = new Coordinate(LONG_SIZE);
+    		}
     		mTileCount = new Coordinate(mAbsoluteTileCount);
     		if (h<w){
     			mTileCount.reverse();
@@ -58,14 +71,12 @@ public class TileView extends View {
     			//change X Y
     			mTileCount.reverse();
     		}
-    		mTileSize = (int) (	Math.floor((double)w / mTileCount.getX())<
-    							Math.floor((double)h / mTileCount.getY())?
-    			Math.floor((double)w / mTileCount.getX()):
-    			Math.floor((double)h / mTileCount.getY()));
     	}
+    	
+    	mTileSize = min((int)Math.floor((double)w / mTileCount.getX()),
+    			(int)Math.floor((double)h / mTileCount.getY()));
     	//Y>X
     	mTileGrid = new int[mAbsoluteTileCount.getY()][mAbsoluteTileCount.getY()];
-    	
     	mOffset = new Coordinate((w - (mTileSize * mTileCount.getX())) / 2, 
     							(h - (mTileSize * mTileCount.getY())) / 2);
     }

@@ -23,6 +23,7 @@
     <string name="pref_title_double">Размер 2Х</string>
     <string name="pref_title_length">Начальная длина змейки</string>
     <string name="pref_title_music">Музыка</string>
+    <string name="pref_title_negative">Негативное изображение</string>
     <string name="pref_title_number_of_apples">Количество яблок</string>
     <string name="pref_title_orientation">Ориентация экрана</string>
     <string name="pref_title_sounds">Звуки</string>
