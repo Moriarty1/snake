@@ -7,12 +7,11 @@ import java.util.Random;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.ColorFilter;
 import android.graphics.ColorMatrixColorFilter;
-import android.graphics.Paint;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
@@ -34,11 +33,10 @@ public class SnakeView extends TileView {
     
     private int 
     	mLevel,
-    	mLastLevel = 5, //TODO change
+    	mLastLevel = 10, //TODO change
     	mScore,
     	mMoveDelay,
     	mLongPressDelay = 1000, //TODO Need?   
-    	
     	
     	mBonus,
     	mBonusLeft,
@@ -53,25 +51,7 @@ public class SnakeView extends TileView {
     	mLastMove, 
     	mLastTouch;
     
-//    private long mLevel;
-//    private long mLastLevel = 5;
-//    private long mScore = 0;
-//    private long mMoveDelay;
-//    private long mLongPressDelay = 1000;  
-//    private long mLastMove;
-//    private long mLastTouch;
-//    private long mBonus;
-//    private long mBonusLeft=0;
-//    private long mBonusTime;
-//    private long mBonusTimeLeft=0;
-//    private long mApplesNumber;
-//    private long mLevelUp;
-//    private long mLevelUpLeft=0;
-//    private long mSnakeStartLength;
     private TextView mStatusText;
-    
-    
-	
 	
     static final float[] NEGATIVE_COLOR_MATRIX = { 
 	    -1.0f, 0, 0, 0, 255, //red
@@ -79,9 +59,6 @@ public class SnakeView extends TileView {
 	    0, 0, -1.0f, 0, 255, //blue
 	    0, 0, 0, 1.0f, 0 //alpha  
 	  };
-	  
-	  ColorFilter mNegativeFilter = new ColorMatrixColorFilter(NEGATIVE_COLOR_MATRIX);
-	  //mNegative.setColorFilter(colorFilter_Negative);
     
     //sound
     private SoundPool soundPool;
@@ -168,7 +145,7 @@ public class SnakeView extends TileView {
 			}
     	}
     	if (Snake.prefs.getBoolean("negative", false)){
-    		mPaint.setColorFilter(mNegativeFilter);
+    		mPaint.setColorFilter(new ColorMatrixColorFilter(NEGATIVE_COLOR_MATRIX));
     	}else{
     		mPaint.setColorFilter(null);
     	}
@@ -230,7 +207,8 @@ public class SnakeView extends TileView {
         //load level from picture
         BitmapFactory.Options bitOpt=new BitmapFactory.Options();
         bitOpt.inScaled=false;
-        Bitmap  mLevelImage = BitmapFactory.decodeResource(getResources(), R.drawable.level1, bitOpt);
+        TypedArray levels = getResources().obtainTypedArray(R.array.levels);
+        Bitmap  mLevelImage = BitmapFactory.decodeResource(getResources(), levels.getResourceId(level-1, R.drawable.level1), bitOpt);
         int height = mLevelImage.getHeight();
         int width = mLevelImage.getWidth();
         int[] pixels = new int[height*width];

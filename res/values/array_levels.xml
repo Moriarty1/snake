@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<array name="levels">
+		<item>@drawable/level1</item>
+		<item>@drawable/level2</item>
+		<item>@drawable/level3</item>
+		<item>@drawable/level4</item>
+		<item>@drawable/level5</item>
+		<item>@drawable/level6</item>
+		<item>@drawable/level7</item>
+		<item>@drawable/level8</item>
+		<item>@drawable/level9</item>
+		<item>@drawable/level10</item>
+	</array>
+</resources>
