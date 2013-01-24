@@ -119,7 +119,7 @@ public class SnakeView extends TileView {
 
     //load settings
     public void loadSettings(){
-    	mMoveDelay = (11-Integer.parseInt(Snake.prefs.getString("speed","6")))*100;
+    	mMoveDelay = (Integer.parseInt(Snake.prefs.getString("speed","400")));
     	mApplesNumber = Integer.parseInt(Snake.prefs.getString("apples","1"));
     	if (mBonus != Integer.parseInt(Snake.prefs.getString("bonus","5"))){
     		mBonus = Integer.parseInt(Snake.prefs.getString("bonus","5"));
@@ -590,7 +590,7 @@ public class SnakeView extends TileView {
 				mAppleList.remove(mCollisionCoordinate);
 				addRandomApple(Tiles.APLLE_IMAGE);
 				mScore += mLevel;
-				mMoveDelay -= 10;
+				mMoveDelay *= 0.96;
 				if (mBonusLeft == 0) {
 					mAppleBonusList.clear();
 					addRandomApple(Tiles.APLLE_BONUS_IMAGE);

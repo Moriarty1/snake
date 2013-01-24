@@ -31,6 +31,18 @@
 	    <item >9</item>
 	    <item >10</item>
 	</string-array>    
+	<string-array name="snake_speedValues">
+	    <item >1000</item>
+	    <item >750</item>
+	    <item >600</item>
+	    <item >500</item>
+	    <item >400</item>
+	    <item >350</item>
+	    <item >325</item>
+	    <item >300</item>
+	    <item >250</item>
+	    <item >200</item>    
+	</string-array>    
 	<string-array name="apples">
 	    <item >1</item>
 	    <item >2</item>
@@ -70,19 +82,19 @@
 	<string-array name="levelup_entries">
 	    <item >@string/pref_always_present</item>
 	    <item >10</item>
+	    <item >15</item>
 	    <item >20</item>
 	    <item >30</item>
-	    <item >40</item>
-	    <item >60</item>	    
+	    <item >40</item>	    
 	    <item >@string/pref_never</item>	    
 	</string-array>
 	<string-array name="levelup_entryValues">
 	    <item >0</item>
 	    <item >10</item>
+	    <item >15</item>
 	    <item >20</item>
 	    <item >30</item>
-	    <item >40</item>
-	    <item >60</item>	    
+	    <item >40</item>	    
 	    <item >-1</item>	    
 	</string-array>
 	<string-array name="orientatin_entries">

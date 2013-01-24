@@ -105,6 +105,26 @@ public class Snake extends Activity {
 		case R.id.menu_level5:
 			mSnakeView.initNewLevel(5);
 			onOptionsMenuClosed(null);
+			break;
+		case R.id.menu_level6:
+			mSnakeView.initNewLevel(6);
+			onOptionsMenuClosed(null);
+			break;
+		case R.id.menu_level7:
+			mSnakeView.initNewLevel(7);
+			onOptionsMenuClosed(null);
+			break;
+		case R.id.menu_level8:
+			mSnakeView.initNewLevel(8);
+			onOptionsMenuClosed(null);
+			break;
+		case R.id.menu_level9:
+			mSnakeView.initNewLevel(9);
+			onOptionsMenuClosed(null);
+			break;
+		case R.id.menu_level10:
+			mSnakeView.initNewLevel(10);
+			onOptionsMenuClosed(null);
 			break;	
 		case R.id.menu_settings:
 			Intent settings = new Intent(Snake.this, SettingsActivity.class);

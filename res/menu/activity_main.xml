@@ -35,6 +35,31 @@
         		android:orderInCategory="5"
         		android:showAsAction="never"
         		android:title="5"/>
+        	<item
+        		android:id="@+id/menu_level6"
+        		android:orderInCategory="6"
+        		android:showAsAction="never"
+        		android:title="6"/>
+        	<item
+        		android:id="@+id/menu_level7"
+        		android:orderInCategory="7"
+        		android:showAsAction="never"
+        		android:title="7"/>
+        	<item
+        		android:id="@+id/menu_level8"
+        		android:orderInCategory="8"
+        		android:showAsAction="never"
+        		android:title="8"/>
+        	<item
+        		android:id="@+id/menu_level9"
+        		android:orderInCategory="9"
+        		android:showAsAction="never"
+        		android:title="9"/>
+        	<item
+        		android:id="@+id/menu_level10"
+        		android:orderInCategory="10"
+        		android:showAsAction="never"
+        		android:title="10"/>
         </menu>	
 	</item>
     <item
