@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="snake">Snake</string>
+    <string name="snake">Snake into a cell </string>
     <string name="touch_to_play">Touch To Play</string>
     <string name="pause">Pause</string>
     <string name="score_">Score: </string>  

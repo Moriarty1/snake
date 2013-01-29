@@ -32,7 +32,7 @@
     <string name="pref_title_levelup">Бонус перехода на следующий уровень</string>
     <string name="score_">Очки: </string>
     <string name="settings">Настройки</string>
-    <string name="snake">Змейка</string>
+    <string name="snake">Змейка в клеточку</string>
     <string name="touch_to_play">Коснитесь для продолжения</string>
     
     <string-array name="orientatin_entries">
